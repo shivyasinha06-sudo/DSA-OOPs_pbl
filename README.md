@@ -1,13 +1,17 @@
-# DSA-OOPs_pbl
+#dsa-oops_pbl
 # IntelliDebug 
-# Machine Learning-Based Static Code Analyzer and Debugging Assistant
+
+### Machine Learning-Based Static Code Analyzer and Debugging Assistant
+
 IntelliDebug is a **C++ static code analysis and debugging assistant** that detects common programming errors and uses **Machine Learning** to predict their severity.
+
 Instead of simply displaying a long list of compiler or analysis warnings, IntelliDebug attempts to identify which issues should receive attention first by classifying them into **Low, Medium, and High severity levels**.
+
 The project combines **Data Structures, Object-Oriented Programming, Compiler Design concepts, Static Analysis, and Machine Learning** into a single practical system.
 
 ---
 
-# Key Features
+##  Key Features
 
 *  Static analysis of C++ source code
 *  Lexical analysis and parsing
@@ -30,15 +34,15 @@ The project combines **Data Structures, Object-Oriented Programming, Compiler De
   * Recall
   * F1-Score
   * Confusion Matrix
-* 🏆 Selection of the best-performing classifier
-* 🔝 Priority-based error ranking using a Priority Queue
-* 📄 Structured debugging report
+*  Selection of the best-performing classifier
+*  Priority-based error ranking using a Priority Queue
+*  Structured debugging report
 
 ---
 
-# System Workflow
+##  System Workflow
 
-
+```text
 C++ Source Code
        ↓
      Lexer
@@ -69,17 +73,18 @@ Severity Prediction
 Priority Queue
        ↓
 Debugging Report
+```
 
 ---
 
-# Technologies Used
+##  Technologies Used
 
-# Programming & Development
+### Programming & Development
 
-* C++
-* Python
+* **C++**
+* **Python**
 
-# Data Structures & Algorithms
+### Data Structures & Algorithms
 
 * Trees
 * Hash Tables
@@ -89,7 +94,7 @@ Debugging Report
 * BFS
 * Priority Queues
 
-# Static Analysis
+### Static Analysis
 
 * Lexical Analysis
 * Parsing
@@ -99,13 +104,13 @@ Debugging Report
 * Control Flow Graphs
 * Rule-Based Analysis
 
-# Machine Learning
+### Machine Learning
 
 * Naive Bayes
 * Logistic Regression
 * Support Vector Machine (SVM)
 
-# Evaluation
+### Evaluation
 
 * Accuracy
 * Precision
@@ -115,7 +120,7 @@ Debugging Report
 
 ---
 
-# Errors Detected
+##  Errors Detected
 
 The rule-based analysis engine is designed to identify common programming problems such as:
 
@@ -131,11 +136,11 @@ The rule-based analysis engine is designed to identify common programming proble
 
 ---
 
-# Machine Learning Approach
+##  Machine Learning Approach
 
 Once an error is detected, IntelliDebug extracts relevant features that can help determine its severity.
 
-# Example Features
+### Example Features
 
 * Error type
 * Scope depth
@@ -145,26 +150,26 @@ Once an error is detected, IntelliDebug extracts relevant features that can help
 
 These features are provided to multiple classification algorithms.
 
-# Models Compared
+### Models Compared
 
-Naive Bayes
+**Naive Bayes**
 Used as a lightweight probabilistic classification baseline.
 
-Logistic Regression
+**Logistic Regression**
 Used to model the relationship between extracted error features and severity classes.
 
-Support Vector Machine (SVM)
+**Support Vector Machine (SVM)**
 Used to identify decision boundaries between different severity levels.
 
 The models are evaluated using standard classification metrics, and the best-performing classifier is selected for the final severity prediction.
 
 ---
 
-# Severity Classification
+##  Severity Classification
 
 Detected errors are categorized into three levels:
 
-
+```text
 LOW
  │
  ├── Minor impact
@@ -176,15 +181,15 @@ MEDIUM
 HIGH
  │
  └── Significant potential impact
+```
 
-
-After classification, a Priority Queue organizes errors so that higher-priority issues can be addressed first.
+After classification, a **Priority Queue** organizes errors so that higher-priority issues can be addressed first.
 
 ---
 
-# Project Architecture
+##  Project Architecture
 
-
+```text
                  ┌──────────────────┐
                  │   C++ Source     │
                  │      Code        │
@@ -237,11 +242,13 @@ After classification, a Priority Queue organizes errors so that higher-priority 
                  ┌──────────────────┐
                  │ Debugging Report │
                  └──────────────────┘
+```
 
 ---
 
-# Project Structure
+##  Project Structure
 
+```text
 IntelliDebug/
 │
 ├── src/
@@ -272,57 +279,57 @@ IntelliDebug/
 │
 ├── README.md
 └── requirements.txt
-
+```
 
 *The structure may evolve as development progresses.*
 
 ---
 
-# How It Works
+##  How It Works
 
-# 1. Source Code Input
+### 1. Source Code Input
 
 The user provides a C++ source file for analysis.
 
-# 2. Lexical Analysis
+### 2. Lexical Analysis
 
 The lexer breaks the source code into meaningful tokens such as keywords, identifiers, operators, literals, and symbols.
 
-# 3. Parsing & AST Construction
+### 3. Parsing & AST Construction
 
 The parser analyzes the tokens and constructs an **Abstract Syntax Tree** representing the structure of the program.
 
-# 4. Symbol & Scope Analysis
+### 4. Symbol & Scope Analysis
 
 A hash-based symbol table stores information about identifiers, variables, and functions. Stack-based scope management handles nested scopes.
 
-# 5. Control Flow Analysis
+### 5. Control Flow Analysis
 
 A Control Flow Graph represents possible execution paths. **DFS and BFS** are used for graph traversal and analysis.
 
-# 6. Error Detection
+### 6. Error Detection
 
 The rule engine applies predefined rules to identify programming errors.
 
-# 7. Feature Extraction
+### 7. Feature Extraction
 
 Relevant characteristics of each detected error are converted into machine-learning features.
 
-# 8. Severity Prediction
+### 8. Severity Prediction
 
 Multiple ML classifiers predict whether an error belongs to the Low, Medium, or High severity class.
 
-# 9. Error Prioritization
+### 9. Error Prioritization
 
 A priority queue ranks the detected issues according to their predicted severity.
 
-# 10. Debugging Report
+### 10. Debugging Report
 
 The system produces a structured report containing the detected errors, their severity, and their priority.
 
 ---
 
-# Project Objectives
+##  Project Objectives
 
 * Develop a functional static analyzer for a selected subset of C++.
 * Detect common programming errors using rule-based analysis.
@@ -336,7 +343,7 @@ The system produces a structured report containing the detected errors, their se
 
 ---
 
-# Scope
+##  Scope
 
 The initial version focuses on a manageable subset of C++, including:
 
@@ -352,7 +359,7 @@ The system is not intended to replace a complete industrial compiler or static-a
 
 ---
 
-# Future Scope
+##  Future Scope
 
 Potential improvements include:
 
@@ -369,9 +376,11 @@ Potential improvements include:
 
 ---
 
-# Team: IntelliDebug
+##  Team
 
-Team ID: `DSCPP-III-2026-T069`
+### IntelliDebug
+
+**Team ID:** `DSCPP-III-2026-T069`
 
 | Member                 | Role        |
 | ---------------------- | ----------- |
@@ -381,7 +390,7 @@ Team ID: `DSCPP-III-2026-T069`
 
 ---
 
-# References
+##  References
 
 1. Bjarne Stroustrup, *The C++ Programming Language*, Addison-Wesley.
 2. A. V. Aho, M. S. Lam, R. Sethi, J. D. Ullman, *Compilers: Principles, Techniques, and Tools*, Pearson.
@@ -391,7 +400,8 @@ Team ID: `DSCPP-III-2026-T069`
 
 ---
 
-# Project Summary
-IntelliDebug aims to bridge the gap between traditional static analysis and intelligent error prioritization by combining compiler concepts, data structures, object-oriented programming, and machine learning.
+##  Project Summary
+
+**IntelliDebug** aims to bridge the gap between traditional static analysis and intelligent error prioritization by combining compiler concepts, data structures, object-oriented programming, and machine learning.
 
 > **Detect the error. Understand its impact. Fix what matters first.**
