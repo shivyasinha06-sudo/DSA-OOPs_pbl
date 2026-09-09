@@ -13,6 +13,7 @@ Unlike heavy AI-based tools or external web-crawling services, **PlagiCheck** pr
 ---
 
 ##  System Architecture
+```
 PLAGICHECK PIPELINE
 │
 ▼
@@ -55,7 +56,7 @@ Priority / Ranking
 │
 ▼
 Plagiarism Report
-
+```
 
 ---
 
