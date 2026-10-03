@@ -1,3 +1,0 @@
-Technology and nature are both fascinating subjects for students. A hash table is a data structure that maps keys to values. It uses a hash function to compute an index into an array of buckets, from which the desired value can be found. In my own words, this makes lookups very fast.
-
-Plants also matter a lot. During photosynthesis, plants absorb carbon dioxide from the air and water from the soil. Using energy from sunlight, they make glucose and release oxygen as a by-product. Finally I think that learning algorithms is fun and useful for every engineering student.
