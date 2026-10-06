@@ -11,6 +11,7 @@
 #include "StringMatcher.h"
 #include "Similarity.h"
 #include "CorpusLoader.h"
+#include "SQLiteDB.h"
 using namespace std;
 const int N = 4;               
 const int TITLE_COL = 0;       
@@ -49,6 +50,17 @@ int main(int argc, char* argv[])
     bool isCSV = corpusPath.size() >= 4 && corpusPath.substr(corpusPath.size() - 4) == ".csv";
     Vector<Article> corpus = isCSV ? loadCorpus(corpusPath, TITLE_COL, TEXT_COL, MAX_DOCS)
                                    : loadCorpusFromText(corpusPath, MAX_DOCS);
+               SQLiteDB database;
+
+if (!database.open("data/plagiarism.db")) {
+    cerr << "Could not open database." << endl;
+    return 1;
+}
+
+if (!database.createTable()) {
+    cerr << "Could not create database table." << endl;
+    return 1;
+}                    
     if (corpus.getSize() == 0) 
     { 
         cout << "Could not load corpus: " << corpusPath << endl; 
