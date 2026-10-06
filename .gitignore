@@ -1,0 +1,6 @@
+*.o
+*.exe
+*.db
+__pycache__/
+Data/
+load_database.py
