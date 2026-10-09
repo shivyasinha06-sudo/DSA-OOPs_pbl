@@ -30,8 +30,7 @@ from flask import send_from_directory
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 # Compiled C++ engine
-ENGINE_EXE = os.path.join(PROJECT_ROOT, "main.exe")
-
+ENGINE_EXE = os.path.join(PROJECT_ROOT, "main.exe" if os.name == "nt" else "main")
 # SQLite corpus database
 DB_PATH = os.path.join(PROJECT_ROOT, "data", "plagiarism.db")
 
