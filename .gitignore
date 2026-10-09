@@ -1,0 +1,42 @@
+# ── Build artifacts ──────────────────────────────────────────────────────────
+*.exe
+*.o
+*.out
+*.obj
+
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# ── Node (not used, but kept for safety) ─────────────────────────────────────
+node_modules/
+
+# ── Temporary test files ──────────────────────────────────────────────────────
+test1.txt
+test2.txt
+test3.txt
+
+# ── Large raw data files ──────────────────────────────────────────────────────
+# AllCombined.txt is the raw import source — not needed at runtime
+AllCombined.txt
+corpus.csv
+
+# ── OS / editor junk ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# ── Secrets / env ────────────────────────────────────────────────────────────
+.env
+.env.*
+secrets.json
