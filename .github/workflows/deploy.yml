@@ -15,9 +15,10 @@ name: Build & Test IntelliPlag
 
 on:
   push:
-    branches: [ "IntelliPlag" ]
+    branches: [ "main", "IntelliPlag" ]
   pull_request:
-    branches: [ "IntelliPlag" ]
+    branches: [ "main", "IntelliPlag" ]
+  workflow_dispatch:
 
 jobs:
   build-and-test:
@@ -109,4 +110,3 @@ jobs:
       #         gcc -c sqlite3.c -o sqlite3.o
       #         g++ -I. main.cpp sqlite3.o -o main
       #         systemctl restart intelliplag
-      #
