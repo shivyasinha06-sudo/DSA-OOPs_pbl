@@ -1,0 +1,111 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# IntelliPlag — CI/CD Workflow
+#
+# What this does:
+#   1. Checks out the IntelliPlag branch (with LFS for plagiarism.db).
+#   2. Compiles the C++ engine with g++ on Linux.
+#   3. Installs Python dependencies (Flask).
+#   4. Runs a quick smoke-test of the C++ engine.
+#   5. (Deployment step — fill in your target server details.)
+#
+# Trigger: push to the IntelliPlag branch.
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: Build & Test IntelliPlag
+
+on:
+  push:
+    branches: [ "IntelliPlag" ]
+  pull_request:
+    branches: [ "IntelliPlag" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout (with LFS for plagiarism.db) ────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # ── 2. Install build tools ───────────────────────────────────────────────
+      - name: Install g++ and SQLite dev headers
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y g++ libsqlite3-dev
+
+      # ── 3. Compile sqlite3 amalgamation ─────────────────────────────────────
+      - name: Compile sqlite3.o
+        run: gcc -c sqlite3.c -o sqlite3.o
+
+      # ── 4. Compile C++ engine ────────────────────────────────────────────────
+      - name: Compile IntelliPlag engine
+        run: g++ -I. main.cpp sqlite3.o -o main
+
+      # ── 5. Verify engine binary ──────────────────────────────────────────────
+      - name: Smoke-test engine (help / bad path) 
+        run: |
+          # Engine must fail gracefully when DB is missing
+          ./main --json /tmp/no_such_input.txt /tmp/no_such_db.db || true
+
+      # ── 6. Install Python dependencies ──────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Flask
+        run: pip install -r api/requirements.txt
+
+      # ── 7. Start API server and run integration smoke-test ───────────────────
+      - name: Integration smoke-test
+        run: |
+          # Start the server in background
+          python api/server.py &
+          SERVER_PID=$!
+          sleep 4
+
+          # Health check
+          curl -sf http://localhost:5000/health || (echo "Health check failed" && kill $SERVER_PID && exit 1)
+
+          # Check that the API is reachable (DB is real so this will run)
+          RESP=$(curl -s -X POST http://localhost:5000/api/plagiarism/check \
+            -H "Content-Type: application/json" \
+            -d '{"text":"April is the fourth month of the year in the Gregorian calendar."}')
+
+          echo "API response: $RESP"
+
+          # Must contain overall_verdict (not an error)
+          echo "$RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); assert 'overall_verdict' in d, 'Missing overall_verdict'"
+
+          kill $SERVER_PID
+          echo "Integration test passed."
+
+      # ── 8. Deployment ────────────────────────────────────────────────────────
+      # TODO: Add your deployment step here.
+      #
+      # Common options for a PBL project:
+      #
+      # Option A — Render.com (free tier, supports Python + exec):
+      #   The Render service will pull from this branch automatically
+      #   when you connect your GitHub repo in the Render dashboard.
+      #   Set Start Command to: python api/server.py
+      #
+      # Option B — Railway.app (free tier):
+      #   Similar — connect repo, set start command.
+      #
+      # Option C — SSH deploy to your own Linux VPS:
+      #   - name: Deploy to server
+      #     uses: appleboy/ssh-action@v1
+      #     with:
+      #       host: ${{ secrets.SERVER_HOST }}
+      #       username: ${{ secrets.SERVER_USER }}
+      #       key: ${{ secrets.SERVER_SSH_KEY }}
+      #       script: |
+      #         cd /opt/intelliplag
+      #         git pull origin IntelliPlag
+      #         gcc -c sqlite3.c -o sqlite3.o
+      #         g++ -I. main.cpp sqlite3.o -o main
+      #         systemctl restart intelliplag
