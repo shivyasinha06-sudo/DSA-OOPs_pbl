@@ -1,4 +1,4 @@
-# ──────────────────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────[...]
 # IntelliPlag — CI/CD Workflow
 #
 # What this does:
@@ -9,7 +9,7 @@
 #   5. (Deployment step — fill in your target server details.)
 #
 # Trigger: push to the IntelliPlag branch.
-# ──────────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────────────────────��[...]
 
 name: Build & Test IntelliPlag
 
@@ -42,7 +42,7 @@ jobs:
 
       # ── 4. Compile C++ engine ────────────────────────────────────────────────
       - name: Compile IntelliPlag engine
-        run: g++ -I. main.cpp sqlite3.o -o main
+        run: g++ -I. main.cpp SQLiteCorpusLoader.cpp sqlite3.o -o main
 
       # ── 5. Verify engine binary ──────────────────────────────────────────────
       - name: Smoke-test engine (help / bad path) 
@@ -83,7 +83,7 @@ jobs:
           kill $SERVER_PID
           echo "Integration test passed."
 
-      # ── 8. Deployment ────────────────────────────────────────────────────────
+      # ── 8. Deployment ───────────────────────────────────────────────────────��[...]
       # TODO: Add your deployment step here.
       #
       # Common options for a PBL project:
@@ -109,3 +109,4 @@ jobs:
       #         gcc -c sqlite3.c -o sqlite3.o
       #         g++ -I. main.cpp sqlite3.o -o main
       #         systemctl restart intelliplag
+      #
