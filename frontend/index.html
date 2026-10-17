@@ -1074,6 +1074,36 @@ footer p { font-size: .8rem; color: var(--muted); line-height: 1.6; }
   border: 1px solid var(--border2);
   color: var(--text2);
 }
+
+
+/* ── Simplified, student-friendly results (output section only) ─────────── */
+#summary-grid { display:block; }
+#summary-grid .stat-box {
+  text-align:left; padding:1.4rem 1.5rem; border-color:var(--border2);
+  background:linear-gradient(135deg, rgba(124,106,245,.14), var(--surface2));
+}
+#summary-grid .stat-val { font-size:clamp(2rem,5vw,3rem); color:var(--accent2); line-height:1.15; }
+#summary-grid .stat-lbl { font-size:.78rem; text-transform:none; letter-spacing:0; color:var(--text2); }
+.results-note { color:var(--muted); font-size:.8rem; margin-top:.55rem; line-height:1.55; }
+.matches-header { font-size:1rem; text-transform:none; letter-spacing:0; color:var(--text); margin-top:1.6rem; }
+.match-card { padding:1.3rem 1.4rem; }
+.match-top { justify-content:flex-start; }
+.match-rank-badge, .verdict-pill, .match-scores { display:none !important; }
+.match-title { font-size:1.05rem; }
+.match-title-sub { font-size:.82rem; }
+.match-comparison { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.85rem; margin-top:1rem; }
+.comparison-pane { min-width:0; background:var(--surface3); border:1px solid var(--border); border-radius:10px; padding:1rem; }
+.comparison-pane h4 { font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text2); margin-bottom:.65rem; }
+.comparison-text { white-space:pre-wrap; overflow-wrap:anywhere; font-size:.85rem; line-height:1.75; color:var(--text); }
+.comparison-text mark { background:rgba(245,158,11,.28); color:#fde68a; border:1px solid rgba(245,158,11,.35); border-radius:3px; padding:0 .08rem; }
+.match-phrase-block { margin-top:.85rem; align-items:flex-start; }
+.phrase-text { white-space:pre-wrap; }
+.improve-card { margin-top:1.25rem; padding:1.25rem 1.4rem; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
+.improve-card h3 { font-size:1rem; margin-bottom:.6rem; }
+.improve-card ul { padding-left:1.2rem; color:var(--text2); font-size:.86rem; }
+.improve-card li + li { margin-top:.35rem; }
+@media(max-width:600px) { .match-comparison { grid-template-columns:1fr; } }
+
   </style>
 </head>
 <body>
@@ -1648,97 +1678,89 @@ function esc(s) {
 }
 
 /* ── Render results ─────────────────────────────────────────────────────── */
-function renderResults(data) {
-  const verdict  = data.overall_verdict;   // CLEAN | SUSPICIOUS | PLAGIARISED
-  const matches  = data.matches || [];
-
-  /* ── Verdict banner ────────────────────────────────────────────────── */
+function renderResults(data, submittedText = '') {
+  const matches = Array.isArray(data.matches) ? data.matches : [];
   const banner = $('verdict-banner');
-  banner.className = 'verdict-banner ' + verdict;
-
-  const cfg = {
-    CLEAN:       { icon:'✅', eye:'No Plagiarism Detected',    main:'Document appears original.',          detail: `No matching content found across ${data.articlesIndexed} indexed articles.` },
-    SUSPICIOUS:  { icon:'⚠️', eye:'Suspicious Overlap Found', main:'Overlapping content detected.',       detail: `${matches.length} matching source${matches.length>1?'s':''} found. Review matches below.` },
-    PLAGIARISED: { icon:'🚨', eye:'Plagiarism Detected',       main:'High similarity with corpus source.', detail: `${matches.length} matching source${matches.length>1?'s':''} found. See details below.` },
-  };
-  const c = cfg[verdict] || cfg.SUSPICIOUS;
-
-  $('verdict-icon').textContent    = c.icon;
-  $('verdict-eyebrow').textContent = c.eye;
-  $('verdict-main').textContent    = c.main;
-  $('verdict-detail').textContent  = c.detail;
-
-  /* ── Summary stats ─────────────────────────────────────────────────── */
-  const topC = matches.length ? matches[0].containment.toFixed(2) + '%' : '—';
-  const topJ = matches.length ? matches[0].jaccard.toFixed(2)     + '%' : '—';
-  const topT = matches.length ? esc(matches[0].title)                   : '—';
-
-  const stats = [
-    { val: data.articlesIndexed,          lbl: 'Articles Indexed' },
-    { val: data.uniqueNGrams,             lbl: data.nGramSize + '-Grams in Input' },
-    { val: matches.length,                lbl: 'Sources Matched' },
-    { val: topC,                          lbl: 'Top Containment' },
-    { val: topJ,                          lbl: 'Top Jaccard' },
-  ];
-
-  $('summary-grid').innerHTML = stats.map(s =>
-    `<div class="stat-box">
-       <div class="stat-val">${s.val}</div>
-       <div class="stat-lbl">${s.lbl}</div>
-     </div>`
-  ).join('');
-
-  /* ── Match cards ───────────────────────────────────────────────────── */
-  const area = $('matches-area');
-  area.innerHTML = '';
-
-  if (matches.length > 0) {
-    area.innerHTML += `<div class="matches-header">Ranked Matching Sources</div>`;
-
-    matches.forEach((m, idx) => {
-      const cont     = m.containment.toFixed(2);
-      const jacc     = m.jaccard.toFixed(2);
-      const topCls   = idx === 0 ? ' top-result' : '';
-      const vCls     = m.verdict;   // PLAGIARISED | SUSPICIOUS_OVERLAP
-      const vLabel   = m.verdict === 'PLAGIARISED' ? 'Plagiarised' : 'Suspicious Overlap';
-
-      const phraseHTML = m.matchedPhrase
-        ? `<div class="match-phrase-block">
-             <span class="phrase-label">Matched phrase</span>
-             <span class="phrase-text">"${esc(m.matchedPhrase)}"</span>
-             ${m.charOffset >= 0 ? `<span class="phrase-offset">char&nbsp;${m.charOffset}</span>` : ''}
-           </div>`
-        : '';
-
-      area.innerHTML +=
-        `<div class="match-card ${vCls}${topCls}">
-           <div class="match-top">
-             <span class="match-rank-badge">Rank&nbsp;#${m.rank}</span>
-             <div class="match-title-group">
-               <div class="match-title">${esc(m.title)}</div>
-               <div class="match-title-sub">Corpus reference document</div>
-             </div>
-             <span class="verdict-pill ${vCls}">${vLabel}</span>
-           </div>
-           <div class="match-scores">
-             <div class="score-pair">
-               <div class="sp-label">Containment Score</div>
-               <div class="sp-val ${scoreClass(m.containment)}">${cont}%</div>
-             </div>
-             <div class="score-pair">
-               <div class="sp-label">Jaccard Similarity</div>
-               <div class="sp-val ${scoreClass(m.jaccard)}">${jacc}%</div>
-             </div>
-           </div>
-           ${phraseHTML}
-         </div>`;
-    });
+  const input = String(submittedText || '');
+  const inputTokens = [];
+  const tokenRegex = /[\p{L}\p{N}]+/gu;
+  let tokenMatch;
+  while ((tokenMatch = tokenRegex.exec(input)) !== null) {
+    inputTokens.push({ value: tokenMatch[0].toLocaleLowerCase(), start: tokenMatch.index, end: tokenMatch.index + tokenMatch[0].length });
   }
 
-  block('results-panel');
+  // Locate phrases returned by the engine inside the user's submitted text.
+  // We deliberately do not use source-specific containment as the document score.
+  const ranges = [];
+  for (const match of matches) {
+    const phrase = typeof match.matchedPhrase === 'string' ? match.matchedPhrase : '';
+    const phraseTokens = (phrase.match(/[\p{L}\p{N}]+/gu) || []).map(t => t.toLocaleLowerCase());
+    if (!phraseTokens.length) continue;
+    for (let i = 0; i <= inputTokens.length - phraseTokens.length; i++) {
+      let same = true;
+      for (let j = 0; j < phraseTokens.length; j++) {
+        if (inputTokens[i + j].value !== phraseTokens[j]) { same = false; break; }
+      }
+      if (same) ranges.push({ start: inputTokens[i].start, end: inputTokens[i + phraseTokens.length - 1].end });
+    }
+  }
 
-  /* Scroll results into view */
-  setTimeout(() => $('results-panel').scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  // Merge overlapping/adjacent spans so matched words are counted only once.
+  ranges.sort((a, b) => a.start - b.start || a.end - b.end);
+  const merged = [];
+  for (const range of ranges) {
+    const last = merged[merged.length - 1];
+    if (last && range.start <= last.end) last.end = Math.max(last.end, range.end);
+    else merged.push({ ...range });
+  }
+  const highlightedWords = new Set();
+  for (let i = 0; i < inputTokens.length; i++) {
+    if (merged.some(r => inputTokens[i].start < r.end && inputTokens[i].end > r.start)) highlightedWords.add(i);
+  }
+  const score = inputTokens.length ? (highlightedWords.size / inputTokens.length) * 100 : 0;
+  const hasLocatedMatches = merged.length > 0;
+
+  const verdict = !matches.length || (hasLocatedMatches && score === 0)
+    ? 'CLEAN'
+    : score >= 25 ? 'PLAGIARISED' : score > 0 ? 'SUSPICIOUS' : 'SUSPICIOUS';
+  banner.className = 'verdict-banner ' + verdict;
+  const cfg = verdict === 'CLEAN'
+    ? { icon:'✅', eye:'No matching text located', main:'No matching passage was identified in your text', detail:'No returned matching phrase could be located in the submitted text. This is not proof that the text is entirely original.' }
+    : verdict === 'PLAGIARISED'
+      ? { icon:'🔎', eye:'High text overlap detected', main:'Review the highlighted sections', detail:'Highlighted words overlap with phrases returned by the detector. Similarity is a signal to review, not a final judgement of plagiarism.' }
+      : { icon:'⚠️', eye:'Potential text overlap', main:'Review the highlighted sections', detail:'Only the matching parts of your submitted text are shown. Similarity alone does not prove plagiarism.' };
+  $('verdict-icon').textContent = cfg.icon;
+  $('verdict-eyebrow').textContent = cfg.eye;
+  $('verdict-main').textContent = cfg.main;
+  $('verdict-detail').textContent = cfg.detail;
+
+  let scoreDisplay = hasLocatedMatches ? `${score.toFixed(1)}%` : (matches.length ? '—' : '0.0%');
+  let scoreNote = hasLocatedMatches
+    ? `${highlightedWords.size} of ${inputTokens.length} words in your submitted text were located in returned matching phrases.`
+    : matches.length
+      ? 'The engine returned source matches but did not provide a phrase that could be located in your submitted text. A reliable input-side score requires matching spans/offsets from the engine.'
+      : 'No matching phrases were returned by the engine.';
+  $('summary-grid').innerHTML = `<div class="stat-box"><div class="stat-val">${esc(scoreDisplay)}</div><div class="stat-lbl">Similarity in your text</div><p class="results-note">${esc(scoreNote)}</p></div>`;
+
+  const area = $('matches-area');
+  let highlightedHTML = '';
+  let cursor = 0;
+  for (const range of merged) {
+    highlightedHTML += esc(input.slice(cursor, range.start));
+    highlightedHTML += '<mark>' + esc(input.slice(range.start, range.end)) + '</mark>';
+    cursor = range.end;
+  }
+  highlightedHTML += esc(input.slice(cursor));
+  if (merged.length) {
+    area.innerHTML = `<div class="matches-header">Your text — matching parts highlighted</div><div class="comparison-pane submitted-document"><div class="comparison-text">${highlightedHTML}</div></div>`;
+  } else if (matches.length) {
+    area.innerHTML = `<div class="matches-header">Your submitted text</div><div class="comparison-pane submitted-document"><div class="comparison-text">${esc(input)}</div></div><p class="results-note">The backend returned matches, but their matching phrases could not be located in the submitted text. The engine needs to return the exact input-side matching spans for accurate highlighting.</p>`;
+  } else {
+    area.innerHTML = `<div class="matches-header">Your submitted text</div><div class="comparison-pane submitted-document"><div class="comparison-text">${esc(input)}</div></div><p class="results-note">No matching phrases were returned from the indexed corpus.</p>`;
+  }
+  area.innerHTML += `<div class="improve-card"><h3>What to do with highlighted text</h3><ul><li>Review each highlighted section against your notes and references.</li><li>If wording came from another source, cite it clearly.</li><li>Use quotation marks for exact wording where appropriate.</li><li>Similarity is not automatically plagiarism; review the context before deciding.</li></ul></div>`;
+  block('results-panel');
+  setTimeout(() => $('results-panel').scrollIntoView({ behavior:'smooth', block:'start' }), 80);
 }
 
 /* ── Main action ────────────────────────────────────────────────────────── */
@@ -1816,7 +1838,7 @@ async function checkPlagiarism() {
     $('btn-label').textContent = 'Check Plagiarism';
   }
 
-  renderResults(data);
+  renderResults(data, text);
 }
 
 /* ── Enter key shortcut (Ctrl/Cmd+Enter in textarea) ───────────────────── */
