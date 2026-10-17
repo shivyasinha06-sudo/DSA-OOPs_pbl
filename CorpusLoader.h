@@ -148,4 +148,14 @@ public:
         return articles;
     }
 };
+
+// Derived Class 3: SQLite Corpus Loader (declaration)
+// Implementation is in SQLiteCorpusLoader.cpp which includes sqlite3.h.
+class SQLiteCorpusLoader : public CorpusLoaderBase
+{
+public:
+    SQLiteCorpusLoader(int maxD = 2000);
+    Vector<Article> load(const string& path) override;
+};
+
 #endif
